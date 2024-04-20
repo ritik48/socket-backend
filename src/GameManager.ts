@@ -1,5 +1,5 @@
 import { WebSocket } from "ws";
-import { BOARD_SIZE, GAME_OVER, INIT, MOVE } from "./messages";
+import { BOARD_SIZE, CLIENT_READY, GAME_OVER, INIT, MOVE } from "./messages";
 import { Game } from "./Game";
 
 interface User {
@@ -32,21 +32,33 @@ export class GameManager {
     addUser({ socket, username }: User) {
         this.users.push({ socket, username });
         this.addHandler({ socket, username });
-        
-        socket.send(
-            JSON.stringify({
-                type: BOARD_SIZE,
-                payload: {
-                    board: this.board,
-                    square_size: 59,
-                },
-            })
-        );
+
+        // socket.send(
+        //     JSON.stringify({
+        //         type: BOARD_SIZE,
+        //         payload: {
+        //             board: this.board,
+        //             square_size: 59,
+        //         },
+        //     })
+        // );
     }
     addHandler({ socket, username }: User) {
         socket.on("message", (data: string) => {
             const message = JSON.parse(data);
 
+            if (message.type === CLIENT_READY) {
+                console.log("client ready");
+                socket.send(
+                    JSON.stringify({
+                        type: BOARD_SIZE,
+                        payload: {
+                            board: this.board,
+                            square_size: 59,
+                        },
+                    })
+                );
+            }
             if (message.type === INIT) {
                 if (this.pendingUser) {
                     const game = new Game(
