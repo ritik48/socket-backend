@@ -1,5 +1,5 @@
 import { WebSocket } from "ws";
-import { GAME_OVER, INIT, MOVE } from "./messages";
+import { BOARD_SIZE, GAME_OVER, INIT, MOVE } from "./messages";
 import { Game } from "./Game";
 
 interface User {
@@ -12,16 +12,36 @@ export class GameManager {
     private games: Game[];
     private pendingUser: User | null;
 
+    private board: string[][];
+
     constructor() {
         this.users = [];
         this.pendingUser = null;
 
         this.games = [];
+
+        this.board = [];
+        for (let i = 0; i < 10; i++) {
+            this.board[i] = [];
+            for (let j = 0; j < 14; j++) {
+                this.board[i][j] = "0";
+            }
+        }
     }
 
     addUser({ socket, username }: User) {
         this.users.push({ socket, username });
         this.addHandler({ socket, username });
+        
+        socket.send(
+            JSON.stringify({
+                type: BOARD_SIZE,
+                payload: {
+                    board: this.board,
+                    square_size: 59,
+                },
+            })
+        );
     }
     addHandler({ socket, username }: User) {
         socket.on("message", (data: string) => {
@@ -63,37 +83,46 @@ export class GameManager {
         });
     }
     removeUser(socket: WebSocket) {
-        const this_users_game = this.games.find(
+        // // remove the game when any of the opponent leaves
+        // this.games = this.games.filter(
+        //     (g) => g.player1.socket !== socket && g.player2.socket !== socket
+        // );
+
+        // remove the user from list
+        this.users = this.users.filter((user) => user.socket != socket);
+    }
+    removeGame(socket: WebSocket) {
+        const game = this.games.find(
             (g) => g.player1.socket === socket || g.player2.socket === socket
         );
 
-        // send the other user notification that their opponent left
-        if (socket === this_users_game?.player1.socket) {
-            this_users_game.player2.socket.send(
+        if (socket !== game?.player1.socket) {
+            game?.player1.socket.send(
                 JSON.stringify({
                     type: GAME_OVER,
                     payload: {
-                        message: `${this_users_game.player1.username} left the game.`,
-                    },
-                })
-            );
-        } else if (socket === this_users_game?.player2.socket) {
-            this_users_game.player1.socket.send(
-                JSON.stringify({
-                    type: GAME_OVER,
-                    payload: {
-                        message: `${this_users_game.player2.username} left the game.`,
+                        message: `${game.player2.username} left the game.`,
                     },
                 })
             );
         }
 
-        // remove the game when any of the opponent leaves
-        this.games = this.games.filter(
-            (g) => g.player1.socket !== socket && g.player2.socket !== socket
-        );
+        if (socket !== game?.player2.socket) {
+            game?.player2.socket.send(
+                JSON.stringify({
+                    type: GAME_OVER,
+                    payload: {
+                        message: `${game.player1.username} left the game.`,
+                    },
+                })
+            );
+        }
 
-        // remove the user from list
-        this.users = this.users.filter((user) => user.socket != socket);
+        // remove the game
+        this.games = this.games.filter(
+            (game) =>
+                game.player1.socket !== socket &&
+                game?.player2.socket !== socket
+        );
     }
 }

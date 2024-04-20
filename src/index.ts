@@ -11,19 +11,17 @@ wss.on("connection", function connection(socket, req) {
     socket.on("error", console.error);
 
     const url = new URL(req.url ?? "", `http://${req.headers.host}`);
-    console.log("url = ", url);
 
     const username: string = url.searchParams.get("name")!;
 
-    console.log(username + " connected");
+    // console.log(username + " connected");
 
     gameManager.addUser({ socket, username });
-    console.log("\n\nadded users =  ", gameManager.users);
 
     socket.on("close", () => {
         gameManager.removeUser(socket);
-        console.log("\n\nremoved user = ", gameManager.users);
+        gameManager.removeGame(socket);
+        console.log(username + " disconnected");
+        // console.log("current users = ", gameManager.users);
     });
-
-    // socket.send(`${username} is connected.`);/
 });
