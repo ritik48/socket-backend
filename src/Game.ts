@@ -27,13 +27,13 @@ export class Game {
 
     private board: string[][];
 
-    private turn: User;
+    // private turn: User;
 
     constructor(player1: User, player2: User) {
         this.player1 = player1;
         this.player2 = player2;
 
-        this.turn = player1;
+        // this.turn = player1;
 
         // this.board = [];
         // for (let i = 0; i < 10; i++) {
@@ -60,7 +60,7 @@ export class Game {
             JSON.stringify({
                 type: ACTIVE,
                 payload: {
-                    message: `It's your turn, ${this.player1.username}`,
+                    message: `It's your turn`,
                     board: this.board,
                     square_size: 59,
                     opponent: this.player2.username,
@@ -71,7 +71,7 @@ export class Game {
             JSON.stringify({
                 type: ACTIVE,
                 payload: {
-                    message: `It's ${this.player1.username}'s turn`,
+                    message: `Its your turn`,
                     board: this.board,
                     square_size: 59,
                     opponent: this.player1.username,
@@ -81,20 +81,22 @@ export class Game {
     }
 
     move(socket: WebSocket, direction: Direction) {
-        if (this.turn.socket !== socket) {
-            socket.send(
-                JSON.stringify({
-                    type: ERROR,
-                    status: false,
-                    payload: {
-                        message: "Not your turn",
-                    },
-                })
-            );
-            return;
-        }
+        // if (this.turn.socket !== socket) {
+        //     socket.send(
+        //         JSON.stringify({
+        //             type: ERROR,
+        //             status: false,
+        //             payload: {
+        //                 message: "Not your turn",
+        //             },
+        //         })
+        //     );
+        //     return;
+        // }
 
-        const currentPos = this.getPlayerPosition(this.turn);
+        const currentPos = this.getPlayerPosition(
+            socket === this.player1.socket ? this.player1 : this.player2
+        );
 
         const newPos = { ...currentPos };
 
@@ -124,25 +126,28 @@ export class Game {
 
         // update the board
         this.board[currentPos.x][currentPos.y] = "0";
-        this.board[newPos.x][newPos.y] = this.turn.username;
+        this.board[newPos.x][newPos.y] =
+            socket === this.player1.socket
+                ? this.player1.username
+                : this.player2.username;
 
         // change the turn
-        this.turn =
-            this.turn.socket === this.player1.socket
-                ? this.player2
-                : this.player1;
+        // this.turn =
+        //     this.turn.socket === this.player1.socket
+        //         ? this.player2
+        //         : this.player1;
 
         // send the users the updated board and also the info of whose turn it is
-        socket.send(
+        this.player1.socket.send(
             JSON.stringify({
                 type: MOVE,
                 payload: {
                     board: this.board,
-                    message: `It's ${this.turn.username}'s turn`,
+                    message: `It's your turn`,
                 },
             })
         );
-        this.turn.socket.send(
+        this.player2.socket.send(
             JSON.stringify({
                 type: MOVE,
                 payload: {

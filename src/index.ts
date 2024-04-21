@@ -1,6 +1,8 @@
 import { WebSocketServer } from "ws";
 import { GameManager } from "./GameManager";
 
+import url from "url";
+
 const wss = new WebSocketServer({ port: 8000 });
 
 const x = "hello";
@@ -10,11 +12,8 @@ const gameManager = new GameManager();
 wss.on("connection", function connection(socket, req) {
     socket.on("error", console.error);
 
-    const url = new URL(req.url ?? "", `http://${req.headers.host}`);
-
-    const username: string = url.searchParams.get("name")!;
-
-    // console.log(username + " connected");
+    //@ts-ignore
+    const username: string = url.parse(req.url, true).query.name;
 
     gameManager.addUser({ socket, username });
 
