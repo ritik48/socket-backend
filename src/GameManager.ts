@@ -21,9 +21,9 @@ export class GameManager {
         this.games = [];
 
         this.board = [];
-        for (let i = 0; i < 10; i++) {
+        for (let i = 0; i < 13; i++) {
             this.board[i] = [];
-            for (let j = 0; j < 14; j++) {
+            for (let j = 0; j < 25; j++) {
                 this.board[i][j] = "0";
             }
         }
@@ -54,7 +54,7 @@ export class GameManager {
                         type: BOARD_SIZE,
                         payload: {
                             board: this.board,
-                            square_size: 59,
+                            square_size: 40,
                         },
                     })
                 );
@@ -108,26 +108,32 @@ export class GameManager {
             (g) => g.player1.socket === socket || g.player2.socket === socket
         );
 
-        if (socket !== game?.player1.socket) {
-            game?.player1.socket.send(
+        if (!game) return;
+
+        if (socket !== game.player1.socket) {
+            game.player1.socket.send(
                 JSON.stringify({
                     type: GAME_OVER,
                     payload: {
                         message: `${game.player2.username} left the game.`,
+                        board: this.board,
                     },
                 })
             );
+            this.pendingUser = game.player1;
         }
 
-        if (socket !== game?.player2.socket) {
-            game?.player2.socket.send(
+        if (socket !== game.player2.socket) {
+            game.player2.socket.send(
                 JSON.stringify({
                     type: GAME_OVER,
                     payload: {
                         message: `${game.player1.username} left the game.`,
+                        board: this.board,
                     },
                 })
             );
+            this.pendingUser = game.player2;
         }
 
         // remove the game

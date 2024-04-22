@@ -42,8 +42,8 @@ export class Game {
         //         this.board[i][j] = "0";
         //     }
         // }
-        this.row = 10;
-        this.col = 14;
+        this.row = 13;
+        this.col = 25;
 
         this.board = [];
         for (let i = 0; i < this.row; i++) {
@@ -62,7 +62,7 @@ export class Game {
                 payload: {
                     message: `It's your turn`,
                     board: this.board,
-                    square_size: 59,
+                    square_size: 40,
                     opponent: this.player2.username,
                 },
             })
@@ -73,7 +73,7 @@ export class Game {
                 payload: {
                     message: `Its your turn`,
                     board: this.board,
-                    square_size: 59,
+                    square_size: 40,
                     opponent: this.player1.username,
                 },
             })
@@ -81,19 +81,6 @@ export class Game {
     }
 
     move(socket: WebSocket, direction: Direction) {
-        // if (this.turn.socket !== socket) {
-        //     socket.send(
-        //         JSON.stringify({
-        //             type: ERROR,
-        //             status: false,
-        //             payload: {
-        //                 message: "Not your turn",
-        //             },
-        //         })
-        //     );
-        //     return;
-        // }
-
         const currentPos = this.getPlayerPosition(
             socket === this.player1.socket ? this.player1 : this.player2
         );
@@ -130,12 +117,6 @@ export class Game {
             socket === this.player1.socket
                 ? this.player1.username
                 : this.player2.username;
-
-        // change the turn
-        // this.turn =
-        //     this.turn.socket === this.player1.socket
-        //         ? this.player2
-        //         : this.player1;
 
         // send the users the updated board and also the info of whose turn it is
         this.player1.socket.send(
