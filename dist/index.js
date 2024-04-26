@@ -51,9 +51,9 @@ function socketInit() {
 (0, db_1.connectDb)()
     .then(() => {
     console.log("Connected to db.");
-    socketInit();
     app.listen(3000, () => {
         console.log("Express server listening on port 3000");
+        socketInit();
     });
 })
     .catch((err) => console.log("Error connecting to db"));
