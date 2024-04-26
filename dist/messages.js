@@ -1,0 +1,10 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.CLIENT_READY = exports.BOARD_SIZE = exports.GAME_OVER = exports.ACTIVE = exports.ERROR = exports.MOVE = exports.INIT = void 0;
+exports.INIT = "init";
+exports.MOVE = "move";
+exports.ERROR = "error";
+exports.ACTIVE = "active";
+exports.GAME_OVER = "game_over";
+exports.BOARD_SIZE = "board_size";
+exports.CLIENT_READY = "client_ready";
