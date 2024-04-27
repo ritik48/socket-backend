@@ -22,6 +22,12 @@ const server = (0, http_1.createServer)(app);
 const wss = new ws_1.WebSocketServer({ server: server });
 const CLIENT_URL = process.env.CLIENT || "http://localhost:5173";
 const PORT = process.env.PORT || 3000;
+let count = 1;
+app.use((req, res, next) => {
+    console.log(count);
+    count++;
+    next();
+});
 app.use((0, cors_1.default)({
     origin: CLIENT_URL,
     credentials: true,
