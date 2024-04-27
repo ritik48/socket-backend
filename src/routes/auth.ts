@@ -3,6 +3,9 @@ import passport from "passport";
 
 const router = Router();
 
+const SUCCESS_REDIRECT =
+    process.env.SUCCESS_REDIRECT || "http://localhost:5173";
+
 router.get(
     "/google",
     passport.authenticate("google", {
@@ -14,7 +17,7 @@ router.get(
 router.get(
     "/google/callback",
     passport.authenticate("google", {
-        successRedirect: "http://localhost:5173/game",
+        successRedirect: SUCCESS_REDIRECT,
         failureRedirect: "/login/failed",
     })
 );

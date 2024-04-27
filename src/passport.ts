@@ -4,13 +4,17 @@ const GoogleStrategy = passportGoogle.Strategy;
 
 import { User } from "./models/User";
 
+const GOOGLE_REDIRECT_URI =
+    process.env.GOOGLE_REDIRECT_URI ||
+    "http://localhost:3000/auth/google/callback";
+
 const passportInit = () => {
     passport.use(
         new GoogleStrategy(
             {
                 clientID: process.env.CLIENT_ID as string,
                 clientSecret: process.env.CLIENT_SECRET as string,
-                callbackURL: process.env.GOOGLE_REDIRECT_URI,
+                callbackURL: GOOGLE_REDIRECT_URI,
             },
             async function (
                 request: any,
