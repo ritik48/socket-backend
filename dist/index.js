@@ -10,6 +10,7 @@ const http_1 = require("http");
 const passport_1 = __importDefault(require("passport"));
 const express_session_1 = __importDefault(require("express-session"));
 const cors_1 = __importDefault(require("cors"));
+const connect_mongo_1 = __importDefault(require("connect-mongo"));
 const passport_2 = require("./passport");
 const GameManager_1 = require("./GameManager");
 const user_1 = require("./routes/user");
@@ -22,6 +23,13 @@ const server = (0, http_1.createServer)(app);
 const wss = new ws_1.WebSocketServer({ server: server });
 const CLIENT_URL = process.env.CLIENT || "http://localhost:5173";
 const PORT = process.env.PORT || 3000;
+const MONGO_URI = process.env.MONGO_URI || "mongodb://127.0.0.1:27017/socket-db";
+const store = connect_mongo_1.default.create({
+    mongoUrl: MONGO_URI,
+    crypto: {
+        secret: "thisshouldbeabettersecret!",
+    },
+});
 let count = 1;
 app.use((req, res, next) => {
     console.log(count);
@@ -33,6 +41,7 @@ app.use((0, cors_1.default)({
     credentials: true,
 }));
 app.use((0, express_session_1.default)({
+    store,
     secret: "secretkey",
     resave: false,
     saveUninitialized: false,

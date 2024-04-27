@@ -8,6 +8,7 @@ import { createServer } from "http";
 import passport from "passport";
 import session from "express-session";
 import cors from "cors";
+import MongoStore from "connect-mongo";
 
 import { passportInit } from "./passport";
 import { GameManager } from "./GameManager";
@@ -26,6 +27,16 @@ const wss = new WebSocketServer({ server: server });
 const CLIENT_URL = process.env.CLIENT || "http://localhost:5173";
 const PORT = process.env.PORT || 3000;
 
+const MONGO_URI =
+    process.env.MONGO_URI || "mongodb://127.0.0.1:27017/socket-db";
+
+const store = MongoStore.create({
+    mongoUrl: MONGO_URI,
+    crypto: {
+        secret: "thisshouldbeabettersecret!",
+    },
+});
+
 let count = 1;
 app.use((req, res, next) => {
     console.log(count);
@@ -42,6 +53,7 @@ app.use(
 
 app.use(
     session({
+        store,
         secret: "secretkey",
         resave: false,
         saveUninitialized: false,
