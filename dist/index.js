@@ -27,7 +27,7 @@ app.use((0, cors_1.default)({
     credentials: true,
 }));
 app.use((0, express_session_1.default)({
-    secret: "keyboard cat",
+    secret: "secretkey",
     resave: false,
     saveUninitialized: false,
     cookie: { secure: true, sameSite: "none", httpOnly: true },

@@ -3,6 +3,7 @@ import { Router, Request, Response } from "express";
 const router = Router();
 
 router.get("/", (req: Request, res: Response) => {
+    console.log("req user = ", req.user);
     if (req.user) {
         res.json({ user: req.user, success: true });
     } else {

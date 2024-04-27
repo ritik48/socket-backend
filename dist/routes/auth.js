@@ -15,6 +15,8 @@ router.get("/google", passport_1.default.authenticate("google", {
     prompt: "select_account",
 }));
 router.get("/google/callback", passport_1.default.authenticate("google", {
-    successRedirect: SUCCESS_REDIRECT,
     failureRedirect: "/login/failed",
-}));
+}), (req, res) => {
+    console.log("inside callback = ", req.user);
+    res.redirect(SUCCESS_REDIRECT);
+});

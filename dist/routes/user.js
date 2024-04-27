@@ -5,6 +5,7 @@ const express_1 = require("express");
 const router = (0, express_1.Router)();
 exports.router = router;
 router.get("/", (req, res) => {
+    console.log("req user = ", req.user);
     if (req.user) {
         res.json({ user: req.user, success: true });
     }
