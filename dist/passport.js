@@ -17,11 +17,13 @@ const passport_1 = __importDefault(require("passport"));
 const passport_google_oauth20_1 = __importDefault(require("passport-google-oauth20"));
 const GoogleStrategy = passport_google_oauth20_1.default.Strategy;
 const User_1 = require("./models/User");
+const GOOGLE_REDIRECT_URI = process.env.GOOGLE_REDIRECT_URI ||
+    "http://localhost:3000/auth/google/callback";
 const passportInit = () => {
     passport_1.default.use(new GoogleStrategy({
         clientID: process.env.CLIENT_ID,
         clientSecret: process.env.CLIENT_SECRET,
-        callbackURL: process.env.GOOGLE_REDIRECT_URI,
+        callbackURL: GOOGLE_REDIRECT_URI,
     }, function (request, accessToken, refreshToken, profile, done) {
         return __awaiter(this, void 0, void 0, function* () {
             let user = yield User_1.User.findOne({

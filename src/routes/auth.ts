@@ -6,6 +6,8 @@ const router = Router();
 const SUCCESS_REDIRECT =
     process.env.SUCCESS_REDIRECT || "http://localhost:5173";
 
+console.log(SUCCESS_REDIRECT);
+
 router.get(
     "/google",
     passport.authenticate("google", {
