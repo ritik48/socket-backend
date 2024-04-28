@@ -37,13 +37,6 @@ const store = MongoStore.create({
     },
 });
 
-let count = 1;
-app.use((req, res, next) => {
-    console.log(count);
-    count++;
-    next();
-});
-
 app.use(
     cors({
         origin: CLIENT_URL,
@@ -63,6 +56,8 @@ app.use(
 
 app.use(passport.initialize());
 app.use(passport.session());
+app.enable("trust proxy");
+
 passportInit();
 
 app.get("/", (req, res) => {

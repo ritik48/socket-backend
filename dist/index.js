@@ -30,12 +30,6 @@ const store = connect_mongo_1.default.create({
         secret: "thisshouldbeabettersecret!",
     },
 });
-let count = 1;
-app.use((req, res, next) => {
-    console.log(count);
-    count++;
-    next();
-});
 app.use((0, cors_1.default)({
     origin: CLIENT_URL,
     credentials: true,
@@ -49,6 +43,7 @@ app.use((0, express_session_1.default)({
 }));
 app.use(passport_1.default.initialize());
 app.use(passport_1.default.session());
+app.enable("trust proxy");
 (0, passport_2.passportInit)();
 app.get("/", (req, res) => {
     res.status(200).json({ success: true, message: "Server online" });
