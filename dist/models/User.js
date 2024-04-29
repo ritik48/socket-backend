@@ -14,6 +14,6 @@ const userSchema = new Schema({
     email: {
         type: String,
     },
-});
+}, { timestamps: true });
 const User = mongoose_1.default.model("user", userSchema);
 exports.User = User;
