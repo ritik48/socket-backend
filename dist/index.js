@@ -5,6 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
+const uuid_1 = require("uuid");
 const express_1 = __importDefault(require("express"));
 const http_1 = require("http");
 const passport_1 = __importDefault(require("passport"));
@@ -60,7 +61,8 @@ wss.on("connection", function connection(socket, req) {
     socket.on("error", console.error);
     //@ts-ignore
     const username = url_1.default.parse(req.url, true).query.name;
-    gameManager.addUser({ socket, username });
+    const id = (0, uuid_1.v4)();
+    gameManager.addUser({ socket, username, id });
     console.log("connected ", username);
     socket.on("close", () => {
         gameManager.removeUser(socket);

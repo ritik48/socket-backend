@@ -5,6 +5,7 @@ import { Game } from "./Game";
 interface User {
     socket: WebSocket;
     username: string;
+    id: string;
 }
 
 export class GameManager {
@@ -29,9 +30,9 @@ export class GameManager {
         }
     }
 
-    addUser({ socket, username }: User) {
-        this.users.push({ socket, username });
-        this.addHandler({ socket, username });
+    addUser({ socket, username, id }: User) {
+        this.users.push({ socket, username, id });
+        this.addHandler({ socket, username, id });
 
         // socket.send(
         //     JSON.stringify({
@@ -43,7 +44,7 @@ export class GameManager {
         //     })
         // );
     }
-    addHandler({ socket, username }: User) {
+    addHandler({ socket, username, id }: User) {
         socket.on("message", (data: string) => {
             const message = JSON.parse(data);
 
@@ -62,14 +63,14 @@ export class GameManager {
             if (message.type === INIT) {
                 if (this.pendingUser) {
                     const game = new Game(
-                        { socket, username },
+                        { socket, username, id },
                         this.pendingUser
                     );
 
                     this.games.push(game);
                     this.pendingUser = null;
                 } else {
-                    this.pendingUser = { socket, username };
+                    this.pendingUser = { socket, username, id };
 
                     socket.send(
                         JSON.stringify({
@@ -95,13 +96,14 @@ export class GameManager {
         });
     }
     removeUser(socket: WebSocket) {
-        // // remove the game when any of the opponent leaves
-        // this.games = this.games.filter(
-        //     (g) => g.player1.socket !== socket && g.player2.socket !== socket
-        // );
-
-        // remove the user from list
         this.users = this.users.filter((user) => user.socket != socket);
+
+        // if the user who leaves is the pendingUser, then make pendingUser = NULL
+        if (this.pendingUser) {
+            if (socket === this.pendingUser.socket) {
+                this.pendingUser = null;
+            }
+        }
     }
     removeGame(socket: WebSocket) {
         const game = this.games.find(

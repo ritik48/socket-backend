@@ -22,7 +22,6 @@ router.get(
         failureRedirect: "/login/failed",
     }),
     (req, res) => {
-        console.log("inside callback = ", req.user);
         res.redirect(SUCCESS_REDIRECT);
     }
 );

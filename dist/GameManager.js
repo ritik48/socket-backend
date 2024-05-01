@@ -16,9 +16,9 @@ class GameManager {
             }
         }
     }
-    addUser({ socket, username }) {
-        this.users.push({ socket, username });
-        this.addHandler({ socket, username });
+    addUser({ socket, username, id }) {
+        this.users.push({ socket, username, id });
+        this.addHandler({ socket, username, id });
         // socket.send(
         //     JSON.stringify({
         //         type: BOARD_SIZE,
@@ -29,7 +29,7 @@ class GameManager {
         //     })
         // );
     }
-    addHandler({ socket, username }) {
+    addHandler({ socket, username, id }) {
         socket.on("message", (data) => {
             const message = JSON.parse(data);
             if (message.type === messages_1.CLIENT_READY) {
@@ -44,12 +44,12 @@ class GameManager {
             }
             if (message.type === messages_1.INIT) {
                 if (this.pendingUser) {
-                    const game = new Game_1.Game({ socket, username }, this.pendingUser);
+                    const game = new Game_1.Game({ socket, username, id }, this.pendingUser);
                     this.games.push(game);
                     this.pendingUser = null;
                 }
                 else {
-                    this.pendingUser = { socket, username };
+                    this.pendingUser = { socket, username, id };
                     socket.send(JSON.stringify({
                         type: messages_1.INIT,
                         payload: {
@@ -68,12 +68,13 @@ class GameManager {
         });
     }
     removeUser(socket) {
-        // // remove the game when any of the opponent leaves
-        // this.games = this.games.filter(
-        //     (g) => g.player1.socket !== socket && g.player2.socket !== socket
-        // );
-        // remove the user from list
         this.users = this.users.filter((user) => user.socket != socket);
+        // if the user who leaves is the pendingUser, then make pendingUser = NULL
+        if (this.pendingUser) {
+            if (socket === this.pendingUser.socket) {
+                this.pendingUser = null;
+            }
+        }
     }
     removeGame(socket) {
         const game = this.games.find((g) => g.player1.socket === socket || g.player2.socket === socket);

@@ -2,6 +2,7 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
+import { v4 as uuidv4 } from "uuid";
 import express from "express";
 import { createServer } from "http";
 
@@ -79,8 +80,9 @@ wss.on("connection", function connection(socket, req) {
 
     //@ts-ignore
     const username: string = url.parse(req.url, true).query.name;
+    const id = uuidv4();
 
-    gameManager.addUser({ socket, username });
+    gameManager.addUser({ socket, username, id });
     console.log("connected ", username);
 
     socket.on("close", () => {

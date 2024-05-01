@@ -4,6 +4,7 @@ import { ACTIVE, ERROR, MOVE } from "./messages";
 interface User {
     socket: WebSocket;
     username: string;
+    id: string;
 }
 
 enum Direction {
@@ -27,21 +28,10 @@ export class Game {
 
     private board: string[][];
 
-    // private turn: User;
-
     constructor(player1: User, player2: User) {
         this.player1 = player1;
         this.player2 = player2;
 
-        // this.turn = player1;
-
-        // this.board = [];
-        // for (let i = 0; i < 10; i++) {
-        //     this.board[i] = [];
-        //     for (let j = 0; j < 10; j++) {
-        //         this.board[i][j] = "0";
-        //     }
-        // }
         this.row = 13;
         this.col = 25;
 
@@ -53,17 +43,19 @@ export class Game {
             }
         }
 
-        this.board[this.row - 1][0] = player1.username;
-        this.board[this.row - 1][this.col - 1] = player2.username;
+        this.board[this.row - 1][0] = player1.id;
+        this.board[this.row - 1][this.col - 1] = player2.id;
 
         this.player1.socket.send(
             JSON.stringify({
                 type: ACTIVE,
                 payload: {
-                    message: `It's your turn`,
                     board: this.board,
                     square_size: 40,
-                    opponent: this.player2.username,
+                    opponent: {
+                        username: this.player2.username,
+                        id: this.player2.id,
+                    },
                 },
             })
         );
@@ -71,10 +63,12 @@ export class Game {
             JSON.stringify({
                 type: ACTIVE,
                 payload: {
-                    message: `Its your turn`,
                     board: this.board,
                     square_size: 40,
-                    opponent: this.player1.username,
+                    opponent: {
+                        username: this.player1.username,
+                        id: this.player1.id,
+                    },
                 },
             })
         );
@@ -101,22 +95,20 @@ export class Game {
         }
 
         if (!this.isMoveValid(newPos)) {
-            socket.send(
-                JSON.stringify({
-                    type: ERROR,
-                    status: false,
-                    payload: { message: "Not a valid move" },
-                })
-            );
+            // socket.send(
+            //     JSON.stringify({
+            //         type: ERROR,
+            //         status: false,
+            //         payload: { message: "Not a valid move" },
+            //     })
+            // );
             return;
         }
 
         // update the board
         this.board[currentPos.x][currentPos.y] = "0";
         this.board[newPos.x][newPos.y] =
-            socket === this.player1.socket
-                ? this.player1.username
-                : this.player2.username;
+            socket === this.player1.socket ? this.player1.id : this.player2.id;
 
         // send the users the updated board and also the info of whose turn it is
         this.player1.socket.send(
@@ -124,7 +116,6 @@ export class Game {
                 type: MOVE,
                 payload: {
                     board: this.board,
-                    message: `It's your turn`,
                 },
             })
         );
@@ -133,7 +124,6 @@ export class Game {
                 type: MOVE,
                 payload: {
                     board: this.board,
-                    message: `It's your turn`,
                 },
             })
         );
@@ -142,7 +132,7 @@ export class Game {
     getPlayerPosition(user: User): Coords {
         for (let i = 0; i < this.row; i++) {
             for (let j = 0; j < this.col; j++) {
-                if (this.board[i][j] === user.username) {
+                if (this.board[i][j] === user.id) {
                     return { x: i, y: j };
                 }
             }
