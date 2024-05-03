@@ -110,12 +110,19 @@ export class Game {
         this.board[newPos.x][newPos.y] =
             socket === this.player1.socket ? this.player1.id : this.player2.id;
 
-        // send the users the updated board and also the info of whose turn it is
+        // send the users the old position, new position as well as the userID who moved
         this.player1.socket.send(
             JSON.stringify({
                 type: MOVE,
                 payload: {
-                    board: this.board,
+                    player:
+                        this.player1.socket === socket
+                            ? this.player1.id
+                            : this.player2.id,
+                    cur_x: newPos.x,
+                    cur_y: newPos.y,
+                    old_x: currentPos.x,
+                    old_y: currentPos.y,
                 },
             })
         );
@@ -123,7 +130,14 @@ export class Game {
             JSON.stringify({
                 type: MOVE,
                 payload: {
-                    board: this.board,
+                    player:
+                        this.player1.socket === socket
+                            ? this.player1.id
+                            : this.player2.id,
+                    cur_x: newPos.x,
+                    cur_y: newPos.y,
+                    old_x: currentPos.x,
+                    old_y: currentPos.y,
                 },
             })
         );
