@@ -98,7 +98,7 @@ connectDb()
         console.log("Connected to db.");
 
         server.listen(PORT, () => {
-            console.log("Express server listening on port 3000");
+            console.log("Express server listening on port " + PORT);
         });
     })
     .catch((err) => console.log("Error connecting to db"));
