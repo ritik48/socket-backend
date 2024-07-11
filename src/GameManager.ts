@@ -33,16 +33,6 @@ export class GameManager {
     addUser({ socket, username, id }: User) {
         this.users.push({ socket, username, id });
         this.addHandler({ socket, username, id });
-
-        // socket.send(
-        //     JSON.stringify({
-        //         type: BOARD_SIZE,
-        //         payload: {
-        //             board: this.board,
-        //             square_size: 59,
-        //         },
-        //     })
-        // );
     }
     addHandler({ socket, username, id }: User) {
         socket.on("message", (data: string) => {
@@ -93,6 +83,17 @@ export class GameManager {
 
                 game.move(socket, message.payload);
             }
+
+            if (message.type === "RESET") {
+                const game = this.games.find(
+                    (g) =>
+                        g.player1.socket === socket ||
+                        g.player2.socket === socket
+                );
+                if (!game) return;
+
+                game.initializeBoard();
+            }
         });
     }
     removeUser(socket: WebSocket) {
@@ -105,6 +106,7 @@ export class GameManager {
             }
         }
     }
+
     removeGame(socket: WebSocket) {
         const game = this.games.find(
             (g) => g.player1.socket === socket || g.player2.socket === socket

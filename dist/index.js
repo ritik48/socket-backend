@@ -41,15 +41,15 @@ app.use((0, express_session_1.default)({
     resave: false,
     saveUninitialized: false,
     cookie: {
-        secure: true,
-        sameSite: "none",
-        httpOnly: true,
+        // secure: true,
+        // sameSite: "none",
+        // httpOnly: true,
         expires: new Date(Date.now() + 1000 * 60 * 60 * 24),
     },
 }));
 app.use(passport_1.default.initialize());
 app.use(passport_1.default.session());
-app.enable("trust proxy");
+// app.enable("trust proxy");
 (0, passport_2.passportInit)();
 app.get("/", (req, res) => {
     res.status(200).json({ success: true, message: "Server online" });

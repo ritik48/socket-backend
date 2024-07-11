@@ -52,9 +52,9 @@ app.use(
         resave: false,
         saveUninitialized: false,
         cookie: {
-            secure: true,
-            sameSite: "none",
-            httpOnly: true,
+            // secure: true,
+            // sameSite: "none",
+            // httpOnly: true,
             expires: new Date(Date.now() + 1000 * 60 * 60 * 24),
         },
     })
@@ -62,7 +62,7 @@ app.use(
 
 app.use(passport.initialize());
 app.use(passport.session());
-app.enable("trust proxy");
+// app.enable("trust proxy");
 
 passportInit();
 
