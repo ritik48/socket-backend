@@ -29,6 +29,7 @@ const passportInit = () => {
             let user = yield User_1.User.findOne({
                 email: profile.emails[0].value,
             });
+            console.log("user = ", user);
             if (!user) {
                 user = yield User_1.User.create({
                     email: profile.emails[0].value,

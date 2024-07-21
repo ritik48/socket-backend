@@ -19,7 +19,6 @@ import { connectDb } from "./db";
 
 import { WebSocketServer } from "ws";
 import url from "url";
-import { cookieOptions } from "./helpers";
 
 const app = express();
 const server = createServer(app);
@@ -53,7 +52,9 @@ app.use(
         resave: false,
         saveUninitialized: false,
         cookie: {
-            ...cookieOptions,
+            secure: true,
+            httpOnly: true,
+            sameSite: "none",
             expires: new Date(Date.now() + 1000 * 60 * 60 * 24),
         },
     })
@@ -61,8 +62,7 @@ app.use(
 
 app.use(passport.initialize());
 app.use(passport.session());
-
-if (!process.env.DEV) app.enable("trust proxy");
+app.enable("trust proxy");
 
 passportInit();
 

@@ -19,7 +19,6 @@ const auth_1 = require("./routes/auth");
 const db_1 = require("./db");
 const ws_1 = require("ws");
 const url_1 = __importDefault(require("url"));
-const helpers_1 = require("./helpers");
 const app = (0, express_1.default)();
 const server = (0, http_1.createServer)(app);
 const wss = new ws_1.WebSocketServer({ server: server });
@@ -41,12 +40,16 @@ app.use((0, express_session_1.default)({
     secret: "secretkey",
     resave: false,
     saveUninitialized: false,
-    cookie: Object.assign(Object.assign({}, helpers_1.cookieOptions), { expires: new Date(Date.now() + 1000 * 60 * 60 * 24) }),
+    cookie: {
+        secure: true,
+        httpOnly: true,
+        sameSite: "none",
+        expires: new Date(Date.now() + 1000 * 60 * 60 * 24),
+    },
 }));
 app.use(passport_1.default.initialize());
 app.use(passport_1.default.session());
-if (!process.env.DEV)
-    app.enable("trust proxy");
+app.enable("trust proxy");
 (0, passport_2.passportInit)();
 app.get("/", (req, res) => {
     res.status(200).json({ success: true, message: "Server online" });

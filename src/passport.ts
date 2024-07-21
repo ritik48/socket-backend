@@ -27,6 +27,8 @@ const passportInit = () => {
                     email: profile.emails[0].value,
                 });
 
+                console.log("user = ", user);
+
                 if (!user) {
                     user = await User.create({
                         email: profile.emails[0].value,
