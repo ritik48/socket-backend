@@ -55,7 +55,7 @@ app.use(
             secure: true,
             httpOnly: true,
             sameSite: "none",
-            expires: new Date(Date.now() + 1000 * 60 * 60 * 24),
+            maxAge: 1000 * 60 * 2,
         },
     })
 );
